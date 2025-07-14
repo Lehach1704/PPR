@@ -20,10 +20,10 @@ public:
     Widget(QWidget *parent = nullptr);
     ~Widget();
 
-    void addSubsection(QTableWidget* table, const QString& title, const QStringList& items, int col);
+    void addSub(QTableWidget* table, const QString& title, const QStringList& orders, const QStringList& laws);
 
     QStringList order;
-    QStringList inPpr;
+    QStringList law;
 
 private:
     Ui::Widget *ui;
