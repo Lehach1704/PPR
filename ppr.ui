@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1319</width>
+    <width>1315</width>
     <height>600</height>
    </rect>
   </property>
@@ -17,9 +17,9 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>30</y>
+     <y>10</y>
      <width>1081</width>
-     <height>541</height>
+     <height>581</height>
     </rect>
    </property>
    <property name="wordWrap">
@@ -85,26 +85,26 @@
    <property name="geometry">
     <rect>
      <x>1100</x>
-     <y>500</y>
-     <width>161</width>
+     <y>560</y>
+     <width>201</width>
      <height>29</height>
     </rect>
    </property>
    <property name="text">
-    <string>сохранить в PDF</string>
+    <string>сохранить результат в PDF</string>
    </property>
   </widget>
   <widget class="QPushButton" name="cdBtn">
    <property name="geometry">
     <rect>
      <x>1100</x>
-     <y>540</y>
-     <width>161</width>
+     <y>520</y>
+     <width>201</width>
      <height>29</height>
     </rect>
    </property>
    <property name="text">
-    <string>выбрать каталог</string>
+    <string>выбрать файл</string>
    </property>
   </widget>
  </widget>

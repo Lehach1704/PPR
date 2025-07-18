@@ -130,6 +130,8 @@ Widget::Widget(QWidget *parent)
     addSub(ui->table, "Работы с применением подъемных сооружений" , subsection6, law6);
     addSub(ui->table, "Погрузочно-разгрузочные работы", subsection7, law7);
     addSub(ui->table, "Электросварочные и газосварочные работы", subsection8, law8);
+
+    connect(ui->cdBtn, &QPushButton::clicked, this, &Widget::findFile);
 }
 
 void Widget::addSub(QTableWidget* table, const QString& title, const QStringList& orders, const QStringList& laws)
@@ -168,3 +170,82 @@ Widget::~Widget()
 {
     delete ui;
 }
+
+void Widget::findFile() // открытие .docx файла
+{
+    QuaZip wordFile(QFileDialog::getOpenFileName());
+    QuaZipFile fileInWord(&wordFile);
+    // JlCompress fileExtr;
+
+    if(!wordFile.getZipName().contains(".docx"))
+    {
+        qDebug() << "Это не docx файл";
+    }
+    else
+    {
+        qDebug() << "А это docx файл";
+        qDebug() << wordFile.getZipName();
+    }
+
+    wordFile.open(QuaZip::mdUnzip);
+
+    if(!wordFile.isOpen())
+    {
+        qDebug() << "Ошибка: " << wordFile.getZipError();
+        wordFile.close();
+    }
+
+    for(bool more = wordFile.goToFirstFile(); more; more = wordFile.goToNextFile())
+    {
+        qDebug() << wordFile.getCurrentFileName();
+        if(wordFile.getCurrentFileName() == "word/document.xml")
+        {
+            break;
+        }
+    }
+
+    qDebug() << "Файл word/document.xml найден";
+
+    processFile(&fileInWord);
+}
+
+void Widget::processFile(QuaZipFile* fileInWord) // работа с document.xml
+{
+    qDebug() << fileInWord->getActualFileName();
+    fileInWord->open(QIODevice::ReadOnly | QIODevice::Text);
+
+    QXmlStreamReader in(fileInWord);
+
+    if(in.hasError())
+    {
+        qDebug() << "Ошибка:" << in.errorString();
+    }
+
+    while(!in.atEnd() && !in.hasError())
+    {
+        QXmlStreamReader::TokenType token = in.readNext();
+
+        if(token == QXmlStreamReader::StartDocument)
+        {
+            qDebug() << "StartDocument";
+            continue;
+        }
+        if(token == QXmlStreamReader::StartElement)
+        {
+            if(in.name() == "t") // тег содержащий информацию
+            {
+                qDebug() << in.readElementText();
+            }
+            else
+            {
+                continue;
+            }
+        }
+        if(in.atEnd())
+        {
+            qDebug() << "Конец файла";
+        }
+    }
+}
+
+
