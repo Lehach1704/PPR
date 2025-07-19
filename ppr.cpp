@@ -209,12 +209,69 @@ void Widget::findFile() // открытие .docx файла
     processFile(&fileInWord);
 }
 
+// void Widget::processFile(QuaZipFile* fileInWord) // работа с document.xml
+// {
+//     qDebug() << fileInWord->getActualFileName();
+//     fileInWord->open(QIODevice::ReadOnly | QIODevice::Text);
+//     QXmlStreamReader in(fileInWord);
+
+//     QFile* textFile = new QFile("D:\\Qt\\cpp\\QtProjects\\PPR\\test.txt");
+//     // textFile->open(QIODevice::ReadWrite | QIODevice::Text);
+
+//     if(!textFile->open(QIODevice::ReadWrite | QIODevice::Text))
+//     {
+//         qDebug() << "Error: " << textFile->errorString();
+//     }
+
+//     if(in.hasError())
+//     {
+//         qDebug() << "Ошибка:" << in.errorString();
+//     }
+
+//     while(!in.atEnd() && !in.hasError())
+//     {
+//         QXmlStreamReader::TokenType token = in.readNext();
+
+//         if(token == QXmlStreamReader::StartDocument)
+//         {
+//             qDebug() << "StartDocument";
+//             continue;
+//         }
+//         if(token == QXmlStreamReader::StartElement)
+//         {
+//             if(in.name() == "t") // тег содержащий информацию
+//             {
+//                 // qDebug() << in.readElementText();
+
+//                 textFile->write(in.readElementText().toUtf8() + " ");
+//             }
+//             else
+//             {
+//                 continue;
+//             }
+//         }
+//         if(in.atEnd())
+//         {
+//             qDebug() << "Конец файла";
+//             fileInWord->close();
+//             textFile->close();
+//             break;
+//         }
+//     }
+// }
+
 void Widget::processFile(QuaZipFile* fileInWord) // работа с document.xml
 {
     qDebug() << fileInWord->getActualFileName();
     fileInWord->open(QIODevice::ReadOnly | QIODevice::Text);
-
     QXmlStreamReader in(fileInWord);
+
+    QFile* textFile = new QFile("D:\\Qt\\cpp\\QtProjects\\PPR\\test.txt");
+
+    if(!textFile->open(QIODevice::ReadWrite | QIODevice::Text))
+    {
+        qDebug() << "Error: " << textFile->errorString();
+    }
 
     if(in.hasError())
     {
@@ -223,27 +280,33 @@ void Widget::processFile(QuaZipFile* fileInWord) // работа с document.xml
 
     while(!in.atEnd() && !in.hasError())
     {
-        QXmlStreamReader::TokenType token = in.readNext();
-
-        if(token == QXmlStreamReader::StartDocument)
+        if(in.tokenType() == QXmlStreamReader::StartDocument)
         {
             qDebug() << "StartDocument";
             continue;
         }
-        if(token == QXmlStreamReader::StartElement)
+
+        if(in.tokenType() == QXmlStreamReader::StartElement && in.name() == "p")
         {
-            if(in.name() == "t") // тег содержащий информацию
+            while(!(in.name() == "p" && in.tokenType() == QXmlStreamReader::EndElement))
             {
-                qDebug() << in.readElementText();
-            }
-            else
-            {
-                continue;
+                in.readNext();
+                if(in.tokenType() == QXmlStreamReader::StartElement && in.name() == "t") // тег содержащий информацию
+                {
+                    textFile->write(in.readElementText().toUtf8());
+                }
+                else if(in.tokenType() == QXmlStreamReader::StartElement && in.name() == "br")
+                {
+                    textFile->write("\n");
+                }
             }
         }
         if(in.atEnd())
         {
             qDebug() << "Конец файла";
+            fileInWord->close();
+            textFile->close();
+            break;
         }
     }
 }

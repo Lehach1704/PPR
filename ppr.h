@@ -8,6 +8,7 @@
 #include <QFileDialog>
 
 #include <QXmlStreamReader>
+// #include <QTextStream>
 
 #include <zlib.h>
 #include <ioapi.h>
